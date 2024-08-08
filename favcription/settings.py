@@ -20,6 +20,7 @@ DEBUG = os.getenv('DEBUG')
 
 ALLOWED_HOSTS = []
 
+SITE_ID=2
 
 # Application definition
 INSTALLED_APPS = [
@@ -29,8 +30,16 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_framework",
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     "scraper",
+    'rest_framework',
+    "rest_framework.authtoken",
+    'django.contrib.sites',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
 ]
 
 MIDDLEWARE = [
@@ -41,6 +50,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "favcription.urls"
@@ -78,8 +88,6 @@ DATABASES = {
     }
 }
 
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -97,7 +105,6 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -119,4 +126,38 @@ STATIC_URL = "static/"
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'offline',
+        }
+    }
+}
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+REST_USE_JWT = True
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+# Session settings
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = False  # Set to True in production
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# CSRF settings
+CSRF_COOKIE_HTTPONLY = False  # Set to True in production
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000']
+
+# For development purposes only, disable HTTPS verification
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'

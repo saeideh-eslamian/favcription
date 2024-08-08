@@ -4,15 +4,15 @@ from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 
 class Channel(models.Model):
-    name = models.CharField(max_length=255)
+    title = models.CharField(max_length=255)
     # The max length of youtube channel is 24
-    youtube_id = models.CharField(max_length=24, unique=True)
+    channel_id = models.CharField(max_length=24, unique=True)
 
     def __str__(self):
-        return self.name
+        return self.title
     
     def get_channel_youtube_url(self):
-        return f"https://www.youtube.com/@{self.channel_youtube_id}"
+        return f"https://www.youtube.com/channel/{self.channel_youtube_id}"
     
 class Keyword(models.Model):
     keyword = models.CharField(max_length=50)
