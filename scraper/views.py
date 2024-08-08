@@ -1,13 +1,14 @@
 from django.shortcuts import redirect
+from django.urls import reverse
+import requests
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
-from django.urls import reverse, reverse_lazy
-import requests
 from rest_framework.authentication import SessionAuthentication
+
 from .authentication import GoogleOAuth2Authentication
 from .permissions import HasValidGoogleOAuth2Credentials
-
 from .models import Channel, Group
 from .serializers import ChannelSerializers, GroupSerializers
 
@@ -186,4 +187,3 @@ class GroupRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = GroupSerializers
     authentication_classes = [SessionAuthentication, GoogleOAuth2Authentication]
     permission_classes = [HasValidGoogleOAuth2Credentials]
-

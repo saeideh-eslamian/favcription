@@ -2,7 +2,7 @@ from rest_framework.permissions import BasePermission
 import google.oauth2.credentials
 from google.auth.transport.requests import Request
 
-
+# Custom permission
 class HasValidGoogleOAuth2Credentials(BasePermission):
     def has_permission(self, request, view):
         if 'credentials' not in request.session:
