@@ -10,12 +10,14 @@ from scraper.views import (
     GroupListCreateView,
     GroupRetrieveUpdateDestroyView,
     ChannelView,
+    VideoListView,
 )
 
 urlpatterns = [
     path('channels/', ChannelView.as_view(),name='channels'),
     path('groups/', GroupListCreateView.as_view(),name='groups'),
     path('group/<int:pk>/', GroupRetrieveUpdateDestroyView.as_view(),name='group-detail'),
+    path('videos/', VideoListView.as_view(), name='video-list-create'),
 
     path('subscriptions/', YouTubeSubscriptionsView.as_view(), name='youtube-subscriptions'),    
     path('authorize/', AuthorizeView.as_view(), name='authorize'), # login with google

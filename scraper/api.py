@@ -16,6 +16,11 @@ from scraper.models import Channel
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
+from googleapiclient.discovery import build
+
+import logging
+import logging
+logger = logging.getLogger(__name__)
 
 CLIENT_SECRETS_FILE = 'client_secret.json'
 SCOPES = [
@@ -149,3 +154,65 @@ class RevokeView(APIView):
             return Response('Credentials successfully revoked.')
         else:
             return Response('An error occurred while revoking credentials', status=status.HTTP_400_BAD_REQUEST)   
+        
+
+
+class YouTubeAPI:
+    def __init__(self, credentials):
+        self.youtube = build(API_SERVICE_NAME, API_VERSION, credentials=credentials)
+
+    def get_new_videos(self, channel_id, last_checked_date):
+        """Fetch new videos from YouTube channel after the last checked date."""
+        published_after = last_checked_date.isoformat() + 'T00:00:00Z'
+        search_request = self.youtube.search().list(
+            part="snippet",
+            channelId=channel_id,
+            publishedAfter=published_after,  # ISO 8601 format
+            maxResults=10,
+            order="date"
+        )
+        try:
+            search_response = search_request.execute()
+            logger.debug(f"API response: {search_response}")
+        except Exception as e:
+            logger.error(f"API error: {e}")
+            return []
+
+        videos = []
+        for item in search_response.get('items', []):
+            description = item["snippet"].get("description", "")
+            hashtags = self.extract_hashtags_from_description(description)
+
+            video = {
+                'title': item['snippet']['title'],
+                'video_id': item['id']['videoId'],
+                'hashtags': hashtags,
+                'channel_title': item['snippet']['channelTitle'],
+                'published_at': item['snippet']['publishedAt'],
+                'url': f"https://www.youtube.com/watch?v={item['id']['videoId']}"
+            }
+            logger.info(f"Fetched video: {video['title']} with ID: {video['video_id']}")
+            videos.append(video)
+
+        logger.info(f"Total videos fetched: {len(videos)}")
+        return videos
+
+    def extract_hashtags_from_description(self, description):
+        """Extract hashtags from the video description."""
+        hashtags = []
+        words = description.split()
+        for word in words:
+            if word.startswith("#"):
+                hashtags.append(word)
+        return hashtags
+    
+    def video_matches_keywords(self, video, keywords):
+        """Check if a video title or hastags matches any of the keywords."""
+        title = video['title'].lower()
+        hashtags = [tag.lower() for tag in video['hashtags']]
+
+        for keyword in keywords:
+            keyword_lower = keyword.keyword.lower()
+            if keyword_lower in title or keyword_lower in hashtags:
+                return True
+        return False       
