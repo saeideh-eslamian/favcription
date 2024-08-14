@@ -19,7 +19,6 @@ import googleapiclient.discovery
 from googleapiclient.discovery import build
 
 import logging
-import logging
 logger = logging.getLogger(__name__)
 
 CLIENT_SECRETS_FILE = 'client_secret.json'
