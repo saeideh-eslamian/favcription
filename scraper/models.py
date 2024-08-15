@@ -1,8 +1,5 @@
 from django.db import models
 from django.utils.timezone import now
-from django.core.exceptions import ValidationError
-import logging
-logger = logging.getLogger(__name__)
 
 
 class Channel(models.Model):
@@ -32,10 +29,8 @@ class Group(models.Model):
         return self.title
         
     def update_last_checked(self):
-        logger.info(f"Updating last checked date from {self.filter_from_date}")
         self.filter_from_date = now()
         self.save()
-        logger.info(f"Updated last checked date to {self.filter_from_date}")
 
 
             
