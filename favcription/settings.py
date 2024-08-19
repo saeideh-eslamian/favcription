@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     "scraper",
     'rest_framework',
     "rest_framework.authtoken",
-    
+
 ]
 
 
@@ -81,18 +81,18 @@ if os.getenv('DOCKERIZED', 'false').lower() == 'true':
     # In Docker environment
     DATABASES = {
         'default': env.db()  # uses DATABASE_URL environment variable
-        }
+    }
 
-else:    
+else:
     DATABASES = {
         "default": {
             'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
-            'NAME': os.getenv('DB_NAME','favcription_db'),
+            'NAME': os.getenv('DB_NAME', 'favcription_db'),
             'USER': os.getenv('DB_USER', 'postgres'),
             'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
-            'HOST': os.getenv('DB_HOST','localhost'),
-            'PORT': os.getenv('DB_PORT','5432'),
-    }
+            'HOST': os.getenv('DB_HOST', 'localhost'),
+            'PORT': os.getenv('DB_PORT', '5432'),
+        }
     }
 
 # Password validation

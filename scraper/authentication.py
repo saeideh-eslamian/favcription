@@ -2,7 +2,7 @@ from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 import google.oauth2.credentials
 from google.auth.transport.requests import Request
-import requests
+
 
 class GoogleOAuth2Authentication(BaseAuthentication):
     def authenticate(self, request):
@@ -20,10 +20,12 @@ class GoogleOAuth2Authentication(BaseAuthentication):
                 try:
                     credentials.refresh(Request())
                     # Save the refreshed credentials back to the session
-                    request.session['credentials'] = self.credentials_to_dict(credentials)
+                    request.session['credentials'] = self.credentials_to_dict(
+                        credentials)
                     request.session.save()
                 except Exception as e:
-                    raise AuthenticationFailed(f'Token refresh failed: {str(e)}')
+                    raise AuthenticationFailed(
+                        f'Token refresh failed: {str(e)}')
             else:
                 raise AuthenticationFailed('No refresh token available')
 

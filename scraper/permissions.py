@@ -2,6 +2,7 @@ from rest_framework.permissions import BasePermission
 import google.oauth2.credentials
 from google.auth.transport.requests import Request
 
+
 # Custom permission
 class HasValidGoogleOAuth2Credentials(BasePermission):
     def has_permission(self, request, view):
@@ -19,7 +20,8 @@ class HasValidGoogleOAuth2Credentials(BasePermission):
                 try:
                     credentials.refresh(Request())
                     # Save the refreshed credentials back to the session
-                    request.session['credentials'] = self.credentials_to_dict(credentials)
+                    request.session['credentials'] = self.credentials_to_dict(
+                        credentials)
                     request.session.save()
                 except Exception:
                     return False
@@ -27,7 +29,7 @@ class HasValidGoogleOAuth2Credentials(BasePermission):
                 return False
 
         return True
-    
+
     def credentials_to_dict(self, credentials) -> dict:
         return {
             'token': credentials.token,
