@@ -87,18 +87,18 @@ WSGI_APPLICATION = "favcription.wsgi.application"
 if os.getenv('DOCKERIZED', 'false').lower() == 'true':
     # In Docker environment
     DATABASES = {
-        'default': env.db()  # uses DATABASE_URL environment variable
+        'default': os.getenv('DATABASE_URL')  # uses DATABASE_URL environment variable
     }
 
 else:
     DATABASES = {
         "default": {
-            'ENGINE': env('DB_ENGINE', default='django.db.backends.postgresql'),
-            'NAME': env('DB_NAME', default='favcription_db'),
-            'USER': env('DB_USER', default='postgres'),
-            'PASSWORD': env('DB_PASSWORD', default='postgres'),
-            'HOST': env('DB_HOST', default='localhost'),
-            'PORT': env('DB_PORT', default='5432'),
+            'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
+            'NAME': os.getenv('DB_NAME', default='favcription_db'),
+            'USER': os.getenv('DB_USER', default='postgres'),
+            'PASSWORD': os.getenv('DB_PASSWORD', default='postgres'),
+            'HOST': os.getenv('DB_HOST', default='localhost'),
+            'PORT': os.getenv('DB_PORT', default='5432'),
         }
     }
 
