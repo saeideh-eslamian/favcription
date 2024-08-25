@@ -43,7 +43,9 @@ jobs:
 
     - name: Run migartions
       run: |
-        python manage.py migrate  
+        python manage.py migrate
+      env:
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}   
 
     - name: Run Tests
       run: |
