@@ -1,23 +1,28 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 import environ
 
-# Load environment variables from .env file
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Initialize environment variables
+env = environ.Env()
+
+# Read the .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG')
+DEBUG = env('DEBUG')
+
+
 
 # ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0", "d07f-2a02-8108-2a40-47e8-5465-d985-292f-4baa.ngrok-free.app"]
 ALLOWED_HOSTS = ['*']
@@ -73,8 +78,6 @@ WSGI_APPLICATION = "favcription.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# Initialize environment variables with django-environ
-env = environ.Env()
 
 # Check if the app is running inside Docker
 if os.getenv('DOCKERIZED', 'false').lower() == 'true':
@@ -86,12 +89,12 @@ if os.getenv('DOCKERIZED', 'false').lower() == 'true':
 else:
     DATABASES = {
         "default": {
-            'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
-            'NAME': os.getenv('DB_NAME', 'favcription_db'),
-            'USER': os.getenv('DB_USER', 'postgres'),
-            'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
-            'HOST': os.getenv('DB_HOST', 'localhost'),
-            'PORT': os.getenv('DB_PORT', '5432'),
+            'ENGINE': env('DB_ENGINE', default='django.db.backends.postgresql'),
+            'NAME': env('DB_NAME', default='favcription_db'),
+            'USER': env('DB_USER', default='postgres'),
+            'PASSWORD': env('DB_PASSWORD', default='postgres'),
+            'HOST': env('DB_HOST', default='localhost'),
+            'PORT': env('DB_PORT', default='5432'),
         }
     }
 
@@ -155,3 +158,12 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost:8000']
 
 # For development purposes only, disable HTTPS verification
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+# Email init
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env('EMAIL_PORT')
+EMAIL_USE_TLS = env('EMAIL_USE_TLS')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')

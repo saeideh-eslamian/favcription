@@ -119,16 +119,21 @@ class YouTubeSubscriptionsView(APIView):
         youtube = googleapiclient.discovery.build(
             API_SERVICE_NAME, API_VERSION, credentials=credentials
         )
-        request = youtube.subscriptions().list(part="snippet", mine=True)
-        response = request.execute()
+
         subscriptions = []
-        for item in response.get("items", []):
-            subscriptions.append(
-                {
+        request = youtube.subscriptions().list(part="snippet", mine=True, maxResults=50)
+
+        while request:
+            response = request.execute()
+            for item in response.get("items", []):
+                subscriptions.append({
                     "title": item["snippet"]["title"],
                     "channel_id": item["snippet"]["resourceId"]["channelId"],
-                }
-            )
+                })
+
+            # Check if there is a next page
+            request = youtube.subscriptions().list_next(request, response)
+   
         return subscriptions
 
 
@@ -201,7 +206,7 @@ class YouTubeAPI:
         search_request = self.youtube.search().list(
             part="snippet",
             channelId=channel_id,
-            publishedAfter=published_after,  # ISO 8601 format
+            publishedAfter=published_after,
             maxResults=10,
             order="date",
         )
