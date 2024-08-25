@@ -102,7 +102,7 @@ class YouTubeSubscriptionsView(APIView):
             return Response(
                 {"error": "Google account not authorized."},
                 status=400
-                )
+            )
 
         token = request.session["credentials"]["token"]
         subscriptions = self.get_subscriptions(token)
@@ -121,7 +121,9 @@ class YouTubeSubscriptionsView(APIView):
         )
 
         subscriptions = []
-        request = youtube.subscriptions().list(part="snippet", mine=True, maxResults=50)
+        request = youtube.subscriptions().list(
+            part="snippet", mine=True, maxResults=50
+        )
 
         while request:
             response = request.execute()
@@ -133,7 +135,7 @@ class YouTubeSubscriptionsView(APIView):
 
             # Check if there is a next page
             request = youtube.subscriptions().list_next(request, response)
-   
+
         return subscriptions
 
 
