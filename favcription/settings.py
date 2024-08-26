@@ -10,12 +10,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
 
-# Initialize environment variables
-env = environ.Env()
-
-# Read the .env file
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -82,12 +76,13 @@ WSGI_APPLICATION = "favcription.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-
+env = environ.Env()
+environ.Env.read_env()
 # Check if the app is running inside Docker
 if os.getenv('DOCKERIZED', 'false').lower() == 'true':
     # In Docker environment
     DATABASES = {
-        'default': os.getenv('DATABASE_URL')  # uses DATABASE_URL environment variable
+        'default': env.db()
     }
 
 else:
@@ -165,9 +160,9 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 # Email init
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = env('EMAIL_HOST')
-EMAIL_PORT = env('EMAIL_PORT')
-EMAIL_USE_TLS = env('EMAIL_USE_TLS')
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
