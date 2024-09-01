@@ -8,6 +8,9 @@
 - **Google Account Integration:** Easily connect your YouTube account using your Google account.
 - **YouTube API Integration:** Retrieve and manage your YouTube channels directly from your account.
 
+> 💙 **The Story Behind the Name "Favcription"**
+> 
+> The name "Favcription" is a combination of the words "favorite" and "subscription." It represents the idea of subscribing to your favorite content.
 
 ## Installation
 **1- Clone the repository:**
