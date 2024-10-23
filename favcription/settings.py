@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "scraper",
     'rest_framework',
     "rest_framework.authtoken",
+    "django_celery_beat",
 
 ]
 
@@ -130,7 +131,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+# to collect all static files
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -157,6 +160,18 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost:8000']
 
 # For development purposes only, disable HTTPS verification
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+# Celery settings
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+if os.getenv('DOCKERIZED', 'false').lower() == 'true':
+    # for docker compose second redis>>> name of container 0>>> first defult database of redis
+    CELERY_BROKER_URL = os.environ.get("CELERY_BROKER","redis://redis:6379/0")
+    CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND","redis://redis:6379/0")
+else:
+    CELERY_BROKER_URL = "redis://localhost:6379/0"    
+    CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+
+
 
 # Email init
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
