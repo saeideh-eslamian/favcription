@@ -1,23 +1,16 @@
 version: '3.8'
 
 services:
-  web:
-    build: .
-    command: >
-      sh -c "python manage.py migrate && gunicorn favcription.wsgi:application --bind 0.0.0.0:8000"
-    volumes:
-      - .:/app
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
+  redis:
+    container_name: redis
+    image: redis:7.4.0-alpine3.20
     environment:
-      - DOCKERIZED=true
-      - DATABASE_URL=postgres://postgres:postgres@db/favcription_db
+      DOCKERIZED: true
     networks:
       - mynetwork
 
   db:
+    container_name: postgres
     image: postgres:13
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -25,6 +18,42 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    networks:
+      - mynetwork 
+
+  web:
+    container_name: django
+    build: .
+    command: "gunicorn favcription.wsgi:application --bind 0.0.0.0:8000"
+    # command: >
+    #   sh -c "python manage.py migrate && gunicorn favcription.wsgi:application --bind 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - 8000:8000
+    depends_on:
+      - celery
+    environment:
+      DOCKERIZED: true
+      DATABASE_URL: ${DATABASE_URL}
+    networks:
+      - mynetwork
+
+  celery:
+    container_name: celery
+    build:
+      context: .
+    command: celery --app=favcription worker -l INFO 
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+    environment:
+      DOCKERIZED: true
+      DATABASE_URL: ${DATABASE_URL}
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
     networks:
       - mynetwork
 
