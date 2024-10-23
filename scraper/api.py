@@ -111,13 +111,13 @@ class YouTubeSubscriptionsView(APIView):
             channel_id = sub["channel_id"]
 
             try:
-                channel = Channel.objects.get(channel_id=channel_id)
+                Channel.objects.get(channel_id=channel_id)
             except Channel.DoesNotExist:
                 Channel.objects.create(
                     title=sub["title"],
                     channel_id=channel_id
                 )
-        return Response({"message": "Subscriptions updated."})
+        return Response({"message": f"Subscriptions updated."})
 
     def get_subscriptions(self, token):
         credentials = google.oauth2.credentials.Credentials(token=token)

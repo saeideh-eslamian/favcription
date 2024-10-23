@@ -12,8 +12,6 @@ schedule, created = IntervalSchedule.objects.get_or_create(
 )
 
 
-
-
 @shared_task
 def send_email_to_users():
     users = User.objects.all()
