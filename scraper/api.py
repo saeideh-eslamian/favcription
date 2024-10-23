@@ -108,10 +108,15 @@ class YouTubeSubscriptionsView(APIView):
         subscriptions = self.get_subscriptions(token)
 
         for sub in subscriptions:
-            Channel.objects.get_or_create(
-                title=sub["title"],
-                channel_id=sub["channel_id"],
-            )
+            channel_id = sub["channel_id"]
+
+            try:
+                Channel.objects.get(channel_id=channel_id)
+            except Channel.DoesNotExist:
+                Channel.objects.create(
+                    title=sub["title"],
+                    channel_id=channel_id
+                )
         return Response({"message": "Subscriptions updated."})
 
     def get_subscriptions(self, token):
