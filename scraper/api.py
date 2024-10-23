@@ -117,7 +117,7 @@ class YouTubeSubscriptionsView(APIView):
                     title=sub["title"],
                     channel_id=channel_id
                 )
-        return Response({"message": f"Subscriptions updated."})
+        return Response({"message": "Subscriptions updated."})
 
     def get_subscriptions(self, token):
         credentials = google.oauth2.credentials.Credentials(token=token)
