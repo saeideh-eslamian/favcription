@@ -5,7 +5,7 @@ services:
     container_name: redis
     image: redis:7.4.0-alpine3.20
     environment:
-      DOCKERIZED: true
+      DOCKERIZED: "true"
     networks:
       - mynetwork
 
@@ -34,7 +34,7 @@ services:
     depends_on:
       - celery
     environment:
-      DOCKERIZED: true
+      DOCKERIZED: "true"
       DATABASE_URL: ${DATABASE_URL}
     networks:
       - mynetwork
@@ -50,7 +50,7 @@ services:
       - redis
       - db
     environment:
-      DOCKERIZED: true
+      DOCKERIZED: "true"
       DATABASE_URL: ${DATABASE_URL}
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0

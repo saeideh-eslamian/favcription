@@ -21,7 +21,6 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG')
 
 
-
 # ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0", "d07f-2a02-8108-2a40-47e8-5465-d985-292f-4baa.ngrok-free.app"]
 ALLOWED_HOSTS = ['*']
 
