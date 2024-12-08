@@ -5,7 +5,9 @@ from django.contrib.auth.models import User
 from django_celery_beat.models import PeriodicTask, IntervalSchedule
 import logging
 
+
 logger = logging.getLogger(__name__)
+
 
 # Create schedule for send emails
 def setup_interval_schedule():
@@ -15,15 +17,16 @@ def setup_interval_schedule():
     )
     return schedule
 
+
 @shared_task
 def send_email_to_users():
     try:
         users = User.objects.all()
         for user in users:
             send_mail(
-                subject='Subject: Your Favorite YouTube Video',
-                message=f'Hi {user.username}, this is an automatic email sent every day.',
-                from_email='chaaredan@gmail.com',
+                subject="Subject: Your Favorite YouTube Video",
+                message=f"Hi {user.username}, this is an automatic email.",
+                from_email="chaaredan@gmail.com",
                 recipient_list=[user.email],
                 fail_silently=False,
             )
@@ -38,6 +41,6 @@ def setup_periodic_task():
     schedule = setup_interval_schedule()
     PeriodicTask.objects.get_or_create(
         interval=schedule,
-        name='Send email to users every day',
-        task='scraper.tasks.send_email_to_users',
+        name="Send email to users every day",
+        task="scraper.tasks.send_email_to_users",
     )
