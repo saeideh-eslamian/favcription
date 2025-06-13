@@ -24,7 +24,7 @@ def send_email_to_users():
         users = User.objects.all()
         for user in users:
             send_mail(
-                subject="Subject: Your Favorite YouTube Video",
+                subject="Your Favorite YouTube Video",
                 message=f"Hi {user.username}, this is an automatic email.",
                 from_email="chaaredan@gmail.com",
                 recipient_list=[user.email],

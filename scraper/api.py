@@ -229,19 +229,25 @@ class YouTubeAPI:
             description = item["snippet"].get("description", "")
             hashtags = self.extract_hashtags_from_description(description)
 
-            video = {
-                "title": item["snippet"]["title"],
-                "video_id": item["id"]["videoId"],
-                "hashtags": hashtags,
-                "channel_title": item["snippet"]["channelTitle"],
-                "published_at": item["snippet"]["publishedAt"],
-                "url":
-                f"https://www.youtube.com/watch?v={item['id']['videoId']}",
-            }
-            logger.info(
-                f"Fetched video: {video['title']} with ID: {video['video_id']}"
-            )
-            videos.append(video)
+            print(item["id"])
+
+            if item["id"]["kind"] == 'youtube#video':
+
+                video = {
+                    "title": item["snippet"]["title"],
+                    "video_id": item["id"]["videoId"],
+                    "hashtags": hashtags,
+                    "channel_title": item["snippet"]["channelTitle"],
+                    "published_at": item["snippet"]["publishedAt"],
+                    "url":
+                    f"https://www.youtube.com/watch?v={item['id']['videoId']}",
+                }
+                logger.info(
+                    f"Fetched video: {video['title']} with ID: {video['video_id']}"
+                )
+                videos.append(video)
+            else:
+                continue    
 
         logger.info(f"Total videos fetched: {len(videos)}")
         return videos

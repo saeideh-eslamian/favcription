@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.timezone import now
+from datetime import timedelta
 
 
 class Channel(models.Model):
@@ -32,6 +33,8 @@ class Group(models.Model):
 
     def update_last_checked(self):
         self.filter_from_date = now()
+        print("*"*50)
+        print(self.filter_from_date)
         self.save()
 
 
