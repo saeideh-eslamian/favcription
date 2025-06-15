@@ -2,6 +2,9 @@ from django.shortcuts import redirect
 from django.urls import reverse
 import requests
 
+from datetime import timedelta
+from django.utils.timezone import now,datetime
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -207,14 +210,18 @@ class YouTubeAPI:
         self.youtube = build(API_SERVICE_NAME, API_VERSION,
                              credentials=credentials)
 
-    def get_new_videos(self, channel_id, last_checked_date):
+    def get_new_videos(self, channel_id, update_at=None):
         """Fetch new videos from YouTube channel after the last checked date"""
-        published_after = last_checked_date.isoformat() + "T00:00:00Z"
+        # if update_at is None:
+        #     update_at = datetime.utcnow() - timedelta(days=2)
+
+        # rest time to midnight
+        published_after = update_at.replace(hour=0, minute=0, second=0, microsecond=0).strftime("%Y-%m-%dT%H:%M:%SZ")
         search_request = self.youtube.search().list(
             part="snippet",
             channelId=channel_id,
             publishedAfter=published_after,
-            maxResults=10,
+            # maxResults=10,
             order="date",
         )
         try:
@@ -245,9 +252,7 @@ class YouTubeAPI:
                 logger.info(
                     f"Fetched video: {video['title']} with ID: {video['video_id']}"
                 )
-                videos.append(video)
-            else:
-                continue    
+                videos.append(video) 
 
         logger.info(f"Total videos fetched: {len(videos)}")
         return videos
@@ -271,3 +276,11 @@ class YouTubeAPI:
             if keyword_lower in title or keyword_lower in hashtags:
                 return True
         return False
+    
+    # TODO: delete after last checked
+    # def get_last_checked_date(group):
+    #     """Return the most recent 'every other day' mark since last update group."""
+    #     days_since_update = (now().date() - group.update_at).days
+    #     intervals_passed = days_since_creation // 2
+    #     last_checked = group.created_at.date() + timedelta(days=intervals_passed * 2)
+    #     return last_checked
