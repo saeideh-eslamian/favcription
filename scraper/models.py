@@ -2,6 +2,9 @@ from django.db import models
 from django.utils.timezone import now
 from datetime import timedelta
 
+from django.contrib.auth.models import User
+from django.db import models
+
 
 class Channel(models.Model):
     title = models.CharField(max_length=255)
@@ -25,17 +28,12 @@ class Keyword(models.Model):
 class Group(models.Model):
     title = models.CharField(max_length=255, unique=True)
     channels = models.ManyToManyField(Channel, related_name='groups')
-    filter_from_date = models.DateField(default=now)
+    update_at = models.DateTimeField(auto_now=True)
     keywords = models.ManyToManyField(Keyword, related_name='keywords')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='youtube_groups', null=True)
 
     def __str__(self):
         return self.title
-
-    def update_last_checked(self):
-        self.filter_from_date = now()
-        print("*"*50)
-        print(self.filter_from_date)
-        self.save()
 
 
 class Video(models.Model):
@@ -49,3 +47,11 @@ class Video(models.Model):
 
     def __str__(self):
         return self.title
+    
+
+class UserCredentials(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    credentials = models.JSONField()  # stores dict of credential info
+
+    def __str__(self):
+        return f"Credentials for {self.user.username}"    

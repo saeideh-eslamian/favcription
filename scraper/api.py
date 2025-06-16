@@ -212,8 +212,6 @@ class YouTubeAPI:
 
     def get_new_videos(self, channel_id, update_at=None):
         """Fetch new videos from YouTube channel after the last checked date"""
-        # if update_at is None:
-        #     update_at = datetime.utcnow() - timedelta(days=2)
 
         # rest time to midnight
         published_after = update_at.replace(hour=0, minute=0, second=0, microsecond=0).strftime("%Y-%m-%dT%H:%M:%SZ")

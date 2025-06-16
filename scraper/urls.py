@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path,include
 from scraper.api import (
     AuthorizeView,
     RefreshTokenView,
@@ -28,4 +28,5 @@ urlpatterns = [
     path('oauth2callback/', OAuth2CallbackView.as_view(),
          name='oauth2callback'),
     path('revoke/', RevokeView.as_view(), name='revoke'),  # logout
+    path('auth/', include('social_django.urls', namespace='social')),
 ]

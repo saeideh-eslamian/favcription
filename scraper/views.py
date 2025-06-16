@@ -59,29 +59,31 @@ class GroupRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         group = self.get_object()
         keywords = group.keywords.all()
         channels = group.channels.all()
-        last_checked_date = group.filter_from_date
+        update_at = group.update_at
 
-        new_videos = []
+        # Credentials from session
         credentials = google.oauth2.credentials.Credentials(
             **request.session['credentials'])
+        
+        # Refresh if expired
+        if credentials.expired and credentials.refresh_token:
+            credentials.refresh(Request())
+            request.session['credentials'] = credentials_to_dict(credentials)
+        
         youtube_api = YouTubeAPI(credentials)
 
-        for channel in channels:
-            # Fetch new videos for the channel after last_checked_date
-            videos = youtube_api.get_new_videos(
-                channel.channel_id, last_checked_date)
+        new_videos = []
 
-            # Filtering videos based on the updated video_matches_keywords
+        for channel in channels:
+            videos = youtube_api.get_new_videos(channel.channel_id, update_at)
             for video in videos:
-                if YouTubeAPI.video_matches_keywords(
-                    youtube_api, video, keywords
-                ):
+                if youtube_api.video_matches_keywords(video, keywords):
                     if not Video.objects.filter(url=video['url']).exists():
                         data = {
                             'title': video['title'],
                             'url': video['url'],
-                            'channel': channel.id,  # Use ID for ForeignKey
-                            'group': group.id,  # Use ID for ForeignKey
+                            'channel': channel.id,
+                            'group': group.id,
                             'publish_date': video['published_at'],
                         }
                         video_serializer = VideoSerializer(data=data)
@@ -91,6 +93,16 @@ class GroupRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
         return Response(new_videos)
 
+
+def credentials_to_dict(credentials):
+    return {
+        'token': credentials.token,
+        'refresh_token': credentials.refresh_token,
+        'token_uri': credentials.token_uri,
+        'client_id': credentials.client_id,
+        'client_secret': credentials.client_secret,
+        'scopes': credentials.scopes
+    }
 
 class KeywordListCreateView(generics.ListCreateAPIView):
     queryset = Keyword.objects.all()

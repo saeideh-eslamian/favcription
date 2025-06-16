@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'rest_framework',
     "rest_framework.authtoken",
     "django_celery_beat",
-
+    'social_django',
 ]
 
 
@@ -141,8 +141,16 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_USE_JWT = True
 AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
+
+# Save credentials
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/youtube.readonly']
+SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['refresh_token', 'expires_in', 'access_token', 'token_type']
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
