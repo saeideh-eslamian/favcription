@@ -30,7 +30,7 @@ class Group(models.Model):
     channels = models.ManyToManyField(Channel, related_name='groups')
     update_at = models.DateTimeField(auto_now=True)
     keywords = models.ManyToManyField(Keyword, related_name='keywords')
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='youtube_groups', null=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='youtube_groups')
 
     def __str__(self):
         return self.title
